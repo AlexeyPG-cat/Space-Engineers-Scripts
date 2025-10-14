@@ -1,0 +1,24 @@
+//miner
+public Program()
+{Runtime.UpdateFrequency = UpdateFrequency.Update10;}
+
+public void Main(string args)
+{
+    IMyBlockGroup miners_group = (IMyBlockGroup)GridTerminalSystem.GetBlockGroupWithName("Буры");
+    List<IMyTerminalBlock> miners_list = new List<IMyTerminalBlock>();
+    float total = 0;
+    float calc;
+
+    miners_group.GetBlocks(miners_list);
+    foreach(var minerr in miners_list)
+    {
+        var miner = minerr as IMyShipDrill;
+        total = total + miner.GetInventory().CurrentMass.RawValue;
+    }
+    calc = total/10000000000;
+    Echo(""+calc);
+    
+    IMyTextSurfaceProvider surf_prov = (IMyTextSurfaceProvider)GridTerminalSystem.GetBlockWithName("Станция управления1");
+    IMyTextSurface display_seat = surf_prov.GetSurface(0);
+    display_seat.WriteText("mass: " + calc);
+}
