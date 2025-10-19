@@ -74,7 +74,7 @@ public bool fireNext(){
             if(api.IsWeaponReadyToFire(fireList[0],0,false)){
                 api.FireWeaponOnce(fireList[0]); 
                 fireList.RemoveAt(0);
-            } else {return false;}
+            }
         }
         return true;
     } else {
