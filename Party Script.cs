@@ -22,6 +22,8 @@ int skips = 0;
 
 //is probably terribly optimised but it is one of my first scripts
 
+//20.10.2025 Ah yes multiple checks to terminal in UpdateFrequency 10, sounds bad... i'll fix that soon, i'll need it soon
+
 
 Random rnd = new Random();
 string type = "random";

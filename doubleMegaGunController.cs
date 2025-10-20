@@ -1,18 +1,15 @@
-
-
-
 //Add your group names there:
-string list1 = "gunsLeft1";
-string list2 = "gunsRight1";
+string list1 = "RailGuns1Right";
+string list2 = "RailGuns1Left";
 
 
 public static WcPbApi api;
-List<IMySmallMissileLauncher> guns0 = new List<IMySmallMissileLauncher>();
-List<IMySmallMissileLauncher> guns1 = new List<IMySmallMissileLauncher>();
-List<IMySmallMissileLauncher> guns2 = new List<IMySmallMissileLauncher>();
+List<IMyTerminalBlock> guns0 = new List<IMyTerminalBlock>();
+List<IMyTerminalBlock> guns1 = new List<IMyTerminalBlock>();
+List<IMyTerminalBlock> guns2 = new List<IMyTerminalBlock>();
 List<IMyTerminalBlock> blocks = new List<IMyTerminalBlock>();
-IMySmallMissileLauncher mainGun1;
-IMySmallMissileLauncher mainGun2;
+IMyTerminalBlock mainGun1;
+IMyTerminalBlock mainGun2;
 List<IMyTerminalBlock> guns1list;
 List<IMyTerminalBlock> guns2list;
 bool isFiring = false;
@@ -29,10 +26,10 @@ public Program(){
     api = new WcPbApi();
 	api.Activate(Me);
     getGunsFromGroup(list1,list2);
+    Echo(guns1.Count +  "+" + guns2.Count + " guns detected :3");
 }
 
 public void Main(string arg){
-    Echo(guns1.Count + "");
     if(arg == "FireAllOnce"){
         prepList();
         isFiring = true;
@@ -55,23 +52,22 @@ public void Main(string arg){
             }
         }
     }
-    
 }
 
 public void prepList(){
     fireList = new List<IMyTerminalBlock>();
     for(int i = 0; i < (guns1.Count + guns2.Count);i++){
         if(i%2 == 0){
-            fireList.Add(guns1[i/2]);
+            if(guns1.Count > i/2) fireList.Add(guns1[i/2]); else fireList.Add(guns2[i/2]); // NOT TESTED!
         } else {
-            fireList.Add(guns2[(i-1)/2]);
+            if(guns2.Count > (i-1)/2) fireList.Add(guns2[(i-1)/2]); else fireList.Add(guns1[(i-1)/2]);
         }
     }
 }
 public bool fireNext(){
     if(fireList.Count > 0){
         try{
-            if(api.IsWeaponReadyToFire(fireList[0],0,false)){
+            if(fireList[0] != null) if(api.IsWeaponReadyToFire(fireList[0],0,false)){
                 api.FireWeaponOnce(fireList[0]); 
                 fireList.RemoveAt(0);
             }
@@ -85,40 +81,40 @@ public bool fireNext(){
 
 
 public void getGunsFromGroup(string group1Name, string group2Name){
-    guns1 = new List<IMySmallMissileLauncher>();
-    guns2 = new List<IMySmallMissileLauncher>();
+    guns1 = new List<IMyTerminalBlock>();
+    guns2 = new List<IMyTerminalBlock>();
     IMyBlockGroup guns1group = (IMyBlockGroup)GridTerminalSystem.GetBlockGroupWithName(group1Name);
     IMyBlockGroup guns2group = (IMyBlockGroup)GridTerminalSystem.GetBlockGroupWithName(group2Name);
     if(guns1group!=null){
         guns1list = new List<IMyTerminalBlock>();
         guns1group.GetBlocks(guns1list);
         foreach(IMyTerminalBlock gun in guns1list){
-            guns1.Add(gun as IMySmallMissileLauncher);
+            guns1.Add(gun as IMyTerminalBlock);
         }
     }
     if(guns2group!=null){
         guns2list = new List<IMyTerminalBlock>();
         guns2group.GetBlocks(guns2list);
         foreach(IMyTerminalBlock gun in guns2list){
-            guns2.Add(gun as IMySmallMissileLauncher);
+            guns2.Add(gun as IMyTerminalBlock);
         }
     }
 }
 
-public void getGuns(string mGun1, string mGun2){
-    guns0 = new List<IMySmallMissileLauncher>();
-    guns1 = new List<IMySmallMissileLauncher>();
-    guns2 = new List<IMySmallMissileLauncher>();
+public void getGuns(string mGun1, string mGun2){ //Useless ig
+    guns0 = new List<IMyTerminalBlock>();
+    guns1 = new List<IMyTerminalBlock>();
+    guns2 = new List<IMyTerminalBlock>();
     blocks = new List<IMyTerminalBlock>();
-    mainGun1 = (IMySmallMissileLauncher)GridTerminalSystem.GetBlockWithName(mGun1);
-    mainGun2 = (IMySmallMissileLauncher)GridTerminalSystem.GetBlockWithName(mGun2);
+    mainGun1 = (IMyTerminalBlock)GridTerminalSystem.GetBlockWithName(mGun1);
+    mainGun2 = (IMyTerminalBlock)GridTerminalSystem.GetBlockWithName(mGun2);
     
     if(mainGun1 != null || mainGun2 != null){
-        GridTerminalSystem.GetBlocksOfType<IMySmallMissileLauncher>(blocks);
-        guns0 = blocks.ConvertAll(x => (IMySmallMissileLauncher)x);
+        GridTerminalSystem.GetBlocksOfType<IMyTerminalBlock>(blocks);
+        guns0 = blocks.ConvertAll(x => (IMyTerminalBlock)x);
         Vector3D gun1pos = mainGun1.GetPosition();
         Vector3D gun2pos = mainGun2.GetPosition();
-        foreach(IMySmallMissileLauncher gun in guns0){
+        foreach(IMyTerminalBlock gun in guns0){
             Vector3D lPos = gun.GetPosition();
             if(Vector3D.Distance(lPos,gun1pos) < Vector3D.Distance(lPos,gun2pos) && mainGun1.CubeGrid == gun.CubeGrid){
                 guns1.Add(gun);
